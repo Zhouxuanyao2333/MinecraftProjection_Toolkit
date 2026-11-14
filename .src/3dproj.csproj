@@ -10,7 +10,7 @@
     <ApplicationIcon>ViewUI\GUIMainIMG\app.ico</ApplicationIcon>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
 
-    <!-- 打包形态开关：由 PackEmbedded.csproj 置 true 时，贴图编进程序集 -->
+    <!-- 打包开关：命令行 -p:EmbedTextures=true 时把贴图编进程序集 -->
     <EmbedTextures Condition="'$(EmbedTextures)' == ''">false</EmbedTextures>
   </PropertyGroup>
 
@@ -30,7 +30,7 @@
 
   <!-- ============ 贴图：两种打包形态二选一 ============ -->
   <ItemGroup>
-    <!-- 开发/普通发布：贴图目录随输出复制，运行时按磁盘路径读取 -->
+    <!-- 开发 / 普通发布：贴图目录随输出复制，运行时按磁盘路径读取 -->
     <None Remove="textures\**" Condition="'$(EmbedTextures)' == 'true'" />
     <None Include="textures\**" CopyToOutputDirectory="PreserveNewest"
           Condition="'$(EmbedTextures)' != 'true'" />

@@ -166,7 +166,10 @@ dotnet run
 
 ```powershell
 cd .src
-dotnet publish PackEmbedded.csproj -c Release -r win-x64 -o ..\publish
+dotnet publish 3dproj.csproj -c Release -r win-x64 `
+  -p:EmbedTextures=true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true `
+  -p:EnableCompressionInSingleFile=true -p:DebugType=None -p:DebugSymbols=false `
+  -o ..\publish
 ```
 
 → `..\publish\Projection3D.exe`——**约 48 MB，单文件**，全部方块贴图已编进程序集。

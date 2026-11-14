@@ -166,7 +166,10 @@ Need **one `.exe` you can double-click and copy anywhere** — no installer, no 
 
 ```powershell
 cd .src
-dotnet publish PackEmbedded.csproj -c Release -r win-x64 -o ..\publish
+dotnet publish 3dproj.csproj -c Release -r win-x64 `
+  -p:EmbedTextures=true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true `
+  -p:EnableCompressionInSingleFile=true -p:DebugType=None -p:DebugSymbols=false `
+  -o ..\publish
 ```
 
 → `..\publish\Projection3D.exe` — **≈ 48 MB, a single file**, with every block texture embedded inside.
