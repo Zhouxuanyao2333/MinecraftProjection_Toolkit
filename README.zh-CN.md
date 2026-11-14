@@ -160,6 +160,30 @@ dotnet run
 
 ---
 
+## 📦 打包发布
+
+想要**一个双击就能跑、拷到哪都行的 exe**——不用安装、不用装 .NET、旁边也不用放 `textures` 文件夹？用自带的打包项目：
+
+```powershell
+cd .src
+dotnet publish PackEmbedded.csproj -c Release -r win-x64 -o ..\publish
+```
+
+→ `..\publish\Projection3D.exe`——**约 48 MB，单文件**，全部方块贴图已编进程序集。
+
+| 开关 | 作用 |
+| :-- | :-- |
+| `EmbedTextures=true` | 1300 张方块贴图变成程序集资源（仅约 0.33 MB）；`TextureResources` 自动先找磁盘、找不到再用内嵌 |
+| `PublishSingleFile` + `EnableCompressionInSingleFile` | 合成一个文件；不压缩约 99 MB |
+| `IncludeNativeLibrariesForSelfExtract` | SkiaSharp / HarfBuzz / libGLESv2 原生库打进 exe，首次启动自解压 |
+| `DebugType=None` / `DebugSymbols=false` | 丢掉 PDB——仅 SkiaSharp 的 PDB 就有 80 MB |
+
+> **故意没用**的选项：`PublishReadyToRun`（体积 +40%）、裁剪 trimming（**会让 Avalonia 的反射式 XAML 加载崩掉**）、NativeAOT（Avalonia 桌面端不支持）。
+>
+> 想 exe 更小、但不介意多带一个文件夹？用普通发布：`dotnet publish 3dproj.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:DebugType=None -o ..\publish`（约 48 MB exe + 2 MB `textures/`）。
+
+---
+
 ## ⚙️ 自定义
 
 <table>

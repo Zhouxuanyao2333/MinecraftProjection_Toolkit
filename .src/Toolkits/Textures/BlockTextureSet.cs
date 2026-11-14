@@ -47,7 +47,7 @@ public sealed class BlockTextureSet : IDisposable
         foreach (FaceKey key in Enum.GetValues<FaceKey>())
         {
             string path = def.GetPath(key);
-            if (string.IsNullOrEmpty(path) || !File.Exists(path)) continue;
+            if (string.IsNullOrEmpty(path) || !TextureResources.Exists(path)) continue;
 
             var img = LoadImage(path, trimAlpha);
             if (img == null) continue;
@@ -124,7 +124,7 @@ public sealed class BlockTextureSet : IDisposable
 
         if (string.IsNullOrEmpty(sample)) return;
 
-        string dir = Path.GetDirectoryName(sample) ?? string.Empty;
+        string dir = TextureResources.GetDirectory(sample);
 
         string dirtPath = Path.Combine(dir, "dirt.png");
         string sideBasePath = Path.Combine(dir, "grass_block_side.png");
@@ -132,7 +132,7 @@ public sealed class BlockTextureSet : IDisposable
         string snowTopPath = Path.Combine(dir, "snow.png");
 
         // ---- 顶面：snow ----
-        if (File.Exists(snowTopPath))
+        if (TextureResources.Exists(snowTopPath))
         {
             var snowTop = LoadImage(snowTopPath, trimAlpha: false);
             if (snowTop != null) set._images[FaceKey.Top] = snowTop;
@@ -140,15 +140,15 @@ public sealed class BlockTextureSet : IDisposable
 
         // ---- 侧面：dirt（主体）叠加 雪裙边 ----
         //   主体优先用 dirt；没有 dirt 就退回 grass_block_side
-        string basePath = File.Exists(dirtPath) ? dirtPath : sideBasePath;
+        string basePath = TextureResources.Exists(dirtPath) ? dirtPath : sideBasePath;
 
-        if (File.Exists(basePath))
+        if (TextureResources.Exists(basePath))
         {
             using var baseBmp = DecodeBitmap(basePath);
             if (baseBmp != null)
             {
                 SKImage? snowEdge = null;
-                if (File.Exists(snowEdgePath)) snowEdge = LoadImage(snowEdgePath, trimAlpha: false);
+                if (TextureResources.Exists(snowEdgePath)) snowEdge = LoadImage(snowEdgePath, trimAlpha: false);
 
                 var sideImg = ComposeBitmap(baseBmp, snowEdge);
                 snowEdge?.Dispose();
@@ -165,7 +165,7 @@ public sealed class BlockTextureSet : IDisposable
         }
 
         // ---- 底面：泥土 ----
-        if (File.Exists(dirtPath))
+        if (TextureResources.Exists(dirtPath))
         {
             var dirtImg = LoadImage(dirtPath, trimAlpha: false);
             if (dirtImg != null && !set._images.ContainsKey(FaceKey.Bottom))
@@ -184,10 +184,10 @@ public sealed class BlockTextureSet : IDisposable
         string topPath = def.GetPath(FaceKey.Top);
         string sidePath = def.GetPath(FaceKey.Front);
 
-        if (string.IsNullOrEmpty(topPath) || !File.Exists(topPath)) return;
-        if (string.IsNullOrEmpty(sidePath) || !File.Exists(sidePath)) return;
+        if (string.IsNullOrEmpty(topPath) || !TextureResources.Exists(topPath)) return;
+        if (string.IsNullOrEmpty(sidePath) || !TextureResources.Exists(sidePath)) return;
 
-        string dir = Path.GetDirectoryName(topPath) ?? string.Empty;
+        string dir = TextureResources.GetDirectory(topPath);
         string overlayPath = Path.Combine(dir, "grass_block_side_overlay.png");
         string dirtPath = Path.Combine(dir, "dirt.png");
 
@@ -208,7 +208,7 @@ public sealed class BlockTextureSet : IDisposable
             {
                 SKImage? tintedOverlay = null;
 
-                if (File.Exists(overlayPath))
+                if (TextureResources.Exists(overlayPath))
                 {
                     using var overlayBmp = DecodeBitmap(overlayPath);
                     if (overlayBmp != null) tintedOverlay = TintBitmap(overlayBmp, tint);
@@ -228,7 +228,7 @@ public sealed class BlockTextureSet : IDisposable
         }
 
         // ---- 底面：泥土 ----
-        if (File.Exists(dirtPath))
+        if (TextureResources.Exists(dirtPath))
         {
             var dirtImg = LoadImage(dirtPath, trimAlpha: false);
             if (dirtImg != null) set._images[FaceKey.Bottom] = dirtImg;
@@ -239,8 +239,7 @@ public sealed class BlockTextureSet : IDisposable
     {
         try
         {
-            using var data = SKData.Create(path);
-            return SKBitmap.Decode(data);
+            return TextureResources.DecodeBitmap(path);
         }
         catch
         {
@@ -316,8 +315,7 @@ public sealed class BlockTextureSet : IDisposable
     {
         try
         {
-            using var data = SKData.Create(path);
-            using var bitmap = SKBitmap.Decode(data);
+            using var bitmap = TextureResources.DecodeBitmap(path);
             if (bitmap == null) return null;
 
             // Minecraft 方块贴图可能是"动画帧竖直排列"（如命令方块侧面是 16×64 的 4 帧）。

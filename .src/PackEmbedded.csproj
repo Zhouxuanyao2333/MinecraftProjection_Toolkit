@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    ============================================================
+    PackEmbedded.csproj —— 「一个 exe 走天下」发布配置
+    ============================================================
+
+    直接 Import 主项目 3dproj.csproj，源码 / 包引用 / 代码生成器全部一致，
+    只是额外打开：
+
+      · EmbedTextures=true                  → 方块贴图编进程序集（不依赖磁盘 textures 目录）
+      · PublishSingleFile=true              → 托管代码 + 原生库打进一个 exe
+      · IncludeNativeLibrariesForSelfExtract → 原生库（SkiaSharp / HarfBuzz / libGLESv2）随 exe 自解压
+      · EnableCompressionInSingleFile=true  → 单文件内容压缩（不压缩约 99 MB，压缩后约 48 MB）
+      · DebugType=None / DebugSymbols=false → 丢掉 PDB（libSkiaSharp.pdb 单独就 80 MB）
+
+    用法：
+      dotnet publish PackEmbedded.csproj -c Release -r win-x64 -o ..\publish
+
+    产物：Projection3D.exe —— 双击即用，无需安装、无需 .NET 运行时、
+          也不再需要旁边的 textures 文件夹。
+    ============================================================
+  -->
+
+  <PropertyGroup>
+    <EmbedTextures>true</EmbedTextures>
+
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+
+    <DebugType>None</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+
+  <Import Project="3dproj.csproj" />
+
+</Project>

@@ -167,11 +167,11 @@ public static class BlockCatalog
     private static List<BlockDefinition> ScanAll(string textureBlockDir)
     {
         var result = new List<BlockDefinition>();
-        if (!Directory.Exists(textureBlockDir)) return result;
+        if (string.IsNullOrEmpty(textureBlockDir)) return result;
 
         var blocks = new Dictionary<string, BlockDefinition>(StringComparer.OrdinalIgnoreCase);
 
-        foreach (var file in Directory.EnumerateFiles(textureBlockDir, "*.png"))
+        foreach (var file in TextureResources.EnumeratePngFiles(textureBlockDir))
         {
             string name = Path.GetFileNameWithoutExtension(file);
             if (string.IsNullOrEmpty(name)) continue;

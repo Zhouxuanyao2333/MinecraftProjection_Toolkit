@@ -160,6 +160,30 @@ Click **保存当前视角** → pick a destination → the app renders offscree
 
 ---
 
+## 📦 Build & Package
+
+Need **one `.exe` you can double-click and copy anywhere** — no installer, no .NET runtime, no `textures/` folder next to it? Use the bundled packaging project:
+
+```powershell
+cd .src
+dotnet publish PackEmbedded.csproj -c Release -r win-x64 -o ..\publish
+```
+
+→ `..\publish\Projection3D.exe` — **≈ 48 MB, a single file**, with every block texture embedded inside.
+
+| Setting | Why |
+| :-- | :-- |
+| `EmbedTextures=true` | 1300 block PNGs become assembly resources (only ~0.33 MB) — the app reads them through `TextureResources`, falling back from disk to embedded automatically |
+| `PublishSingleFile` + `EnableCompressionInSingleFile` | one file; uncompressed it would be ~99 MB |
+| `IncludeNativeLibrariesForSelfExtract` | SkiaSharp / HarfBuzz / libGLESv2 natives live inside the exe and self-extract on first launch |
+| `DebugType=None` / `DebugSymbols=false` | drops PDBs — the SkiaSharp PDB alone is 80 MB |
+
+> **Not** used on purpose: `PublishReadyToRun` (≈ +40 % size), trimming (**breaks** Avalonia's reflection-based XAML loading), NativeAOT (unsupported by Avalonia desktop).
+>
+> Want a smaller exe but don't mind shipping a folder? Plain `dotnet publish 3dproj.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:DebugType=None -o ..\publish` keeps textures on disk (~48 MB exe + 2 MB `textures/`).
+
+---
+
 ## ⚙️ Customization
 
 <table>

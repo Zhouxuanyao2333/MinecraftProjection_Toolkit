@@ -169,7 +169,7 @@ public partial class MainWindow : Window
 
         if (string.IsNullOrEmpty(blockDir))
         {
-            StatusText.Text = "未找到 textures\\block 目录";
+            StatusText.Text = "未找到方块贴图（磁盘目录与内嵌资源都没有）";
             CountText.Text = "0 个方块";
             return;
         }
@@ -199,23 +199,10 @@ public partial class MainWindow : Window
     }
 
     /// <summary>
-    /// 找到贴图目录。优先输出目录，其次从可执行目录逐级向上找。
+    /// 找到贴图目录。优先磁盘（输出目录 → 逐级向上找），
+    /// 磁盘不存在时退回程序集内嵌贴图（单文件发布模式）。
     /// </summary>
-    private static string ResolveTextureBlockDir()
-    {
-        string candidate = Path.Combine(AppContext.BaseDirectory, "textures", "block");
-        if (Directory.Exists(candidate)) return candidate;
-
-        var dir = new DirectoryInfo(AppContext.BaseDirectory);
-        while (dir != null)
-        {
-            candidate = Path.Combine(dir.FullName, "textures", "block");
-            if (Directory.Exists(candidate)) return candidate;
-            dir = dir.Parent;
-        }
-
-        return string.Empty;
-    }
+    private static string ResolveTextureBlockDir() => TextureResources.ResolveBlockDir();
 
     // ============================================================
     // 列表筛选
