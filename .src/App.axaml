@@ -1,0 +1,75 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Projection3D.App"
+             RequestedThemeVariant="Light">
+
+  <Application.Styles>
+    <FluentTheme />
+
+    <!-- ============================================================
+         全局字体：统一微软雅黑，避免中英文混排时字体跳变
+         ============================================================ -->
+    <Style Selector="Window">
+      <Setter Property="FontFamily" Value="Microsoft YaHei, Segoe UI, sans-serif" />
+      <Setter Property="FontSize" Value="13" />
+    </Style>
+    <Style Selector="TextBlock">
+      <Setter Property="FontFamily" Value="Microsoft YaHei, Segoe UI, sans-serif" />
+    </Style>
+    <Style Selector="Button">
+      <Setter Property="FontFamily" Value="Microsoft YaHei, Segoe UI, sans-serif" />
+    </Style>
+    <Style Selector="ListBoxItem">
+      <Setter Property="FontFamily" Value="Microsoft YaHei, Segoe UI, sans-serif" />
+    </Style>
+    <Style Selector="TextBox">
+      <Setter Property="FontFamily" Value="Microsoft YaHei, Segoe UI, sans-serif" />
+    </Style>
+    <Style Selector="ComboBox">
+      <Setter Property="FontFamily" Value="Microsoft YaHei, Segoe UI, sans-serif" />
+    </Style>
+  </Application.Styles>
+
+  <Application.Resources>
+
+    <!-- ============================================================
+         配色方案（白 + 粉）—— ThemeConfig / 配色下拉框会实时替换
+         ============================================================ -->
+
+    <!-- 主背景渐变 -->
+    <LinearGradientBrush x:Key="BgGradient" StartPoint="0%,0%" EndPoint="100%,100%">
+      <GradientStop Color="#FFFFFF" Offset="0" />
+      <GradientStop Color="#FFF1F7" Offset="0.52" />
+      <GradientStop Color="#FFD8E8" Offset="1" />
+    </LinearGradientBrush>
+
+    <!-- 内容卡片底色（半透明白，透出背景形成亚克力感） -->
+    <SolidColorBrush x:Key="CardBg" Color="#D9FFFFFF" />
+    <SolidColorBrush x:Key="CardBgSoft" Color="#B3FFFFFF" />
+
+    <!-- 强调色 -->
+    <SolidColorBrush x:Key="AccentBrush" Color="#FF7EB3" />
+    <SolidColorBrush x:Key="AccentSoftBrush" Color="#FFC6DB" />
+    <SolidColorBrush x:Key="AccentGlowBrush" Color="#33FF7EB3" />
+
+    <!-- 文字 -->
+    <SolidColorBrush x:Key="TextPrimaryBrush" Color="#3B3340" />
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="#8A8090" />
+
+    <!-- 渲染区底色 -->
+    <SolidColorBrush x:Key="ViewportBgBrush" Color="#FDFAFB" />
+
+    <!-- 标题栏纯色（随配色方案变化） -->
+    <SolidColorBrush x:Key="TitleBarBrush" Color="#FF8FB8" />
+
+    <!-- 主按钮渐变（随配色方案变化） -->
+    <LinearGradientBrush x:Key="PrimaryButtonBrush" StartPoint="0%,0%" EndPoint="100%,100%">
+      <GradientStop Color="#FF9CC4" Offset="0" />
+      <GradientStop Color="#FF6FA8" Offset="1" />
+    </LinearGradientBrush>
+
+    <!-- 边框 -->
+    <SolidColorBrush x:Key="HairlineBrush" Color="#33FFFFFF" />
+
+  </Application.Resources>
+</Application>

@@ -1,0 +1,478 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vui="using:Projection3D.ViewUI"
+        x:Class="Projection3D.ViewUI.MainWindow"
+        Title=""
+        Width="1040" Height="680"
+        MinWidth="860" MinHeight="580"
+        Background="Transparent"
+        TransparencyLevelHint="AcrylicBlur"
+        WindowStartupLocation="CenterScreen"
+        WindowDecorations="None"
+        Icon="/ViewUI/GUIMainIMG/purple_glazed_terracotta_512x512.ico">
+    
+
+  <Window.Transitions>
+    <Transitions>
+      <TransformOperationsTransition Property="RenderTransform"
+                                    Duration="0:0:0.76"
+                                    Easing="CubicEaseOut" />
+      <DoubleTransition Property="Opacity"
+                        Duration="0:0:0.76"
+                        Easing="CubicEaseOut" />
+    </Transitions>
+  </Window.Transitions>
+
+  <Window.Styles>
+
+    <!-- ============================================================
+         标题栏按钮（最小化 / 关闭）：无底色，只有白色图标
+         ============================================================ -->
+    <Style Selector="Button.titlebar">
+      <Setter Property="Width" Value="38" />
+      <Setter Property="Height" Value="30" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="CornerRadius" Value="7" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="Transitions">
+        <Transitions>
+          <BrushTransition Property="Background" Duration="0:0:0.15" />
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="Button.titlebar:pointerover">
+      <Setter Property="Background" Value="#33FFFFFF" />
+    </Style>
+    <Style Selector="Button.titlebar:pressed">
+      <Setter Property="Background" Value="#59FFFFFF" />
+    </Style>
+    <Style Selector="Button.titlebar.close:pointerover">
+      <Setter Property="Background" Value="#B3FF4D6D" />
+    </Style>
+    <Style Selector="Button.titlebar.close:pressed">
+      <Setter Property="Background" Value="#FF4D6D" />
+    </Style>
+
+    <!-- ============================================================
+         普通按钮：幽灵（浅玻璃）+ 主按钮（粉渐变）
+         ============================================================ -->
+    <Style Selector="Button.ghost">
+      <Setter Property="CornerRadius" Value="10" />
+      <Setter Property="Padding" Value="13,7" />
+      <Setter Property="Background" Value="#8CFFFFFF" />
+      <Setter Property="BorderBrush" Value="#40FFFFFF" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+      <Setter Property="FontSize" Value="12.5" />
+      <Setter Property="Transitions">
+        <Transitions>
+          <BrushTransition Property="Background" Duration="0:0:0.16" />
+          <DoubleTransition Property="Opacity" Duration="0:0:0.16" />
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="Button.ghost:pointerover">
+      <Setter Property="Background" Value="{DynamicResource AccentGlowBrush}" />
+    </Style>
+    <Style Selector="Button.ghost:pressed">
+      <Setter Property="Background" Value="{DynamicResource AccentSoftBrush}" />
+      <Setter Property="Opacity" Value="0.82" />
+    </Style>
+
+    <Style Selector="Button.primary">
+      <Setter Property="CornerRadius" Value="10" />
+      <Setter Property="Padding" Value="15,7" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Foreground" Value="White" />
+      <Setter Property="FontSize" Value="12.5" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Background" Value="{DynamicResource PrimaryButtonBrush}" />
+      <Setter Property="Transitions">
+        <Transitions>
+          <DoubleTransition Property="Opacity" Duration="0:0:0.16" />
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="Button.primary:pointerover">
+      <Setter Property="Opacity" Value="0.9" />
+    </Style>
+    <Style Selector="Button.primary:pressed">
+      <Setter Property="Opacity" Value="0.74" />
+    </Style>
+
+  </Window.Styles>
+
+  <Border CornerRadius="16" ClipToBounds="True">
+  <Panel ClipToBounds="True">
+
+    <!-- ================= 背景层 ================= -->
+    <Grid ClipToBounds="True">
+      <Border x:Name="BackdropLayer"
+              Background="{DynamicResource BgGradient}"
+              Opacity="0.82" />
+
+      <Image Source="avares://Projection3D/ViewUI/GUIMainIMG/glow-pink.png"
+             Width="620" Height="620"
+             Stretch="Uniform"
+             HorizontalAlignment="Right"
+             VerticalAlignment="Top"
+             Margin="0,-220,-180,0"
+             Opacity="0.75"
+             IsHitTestVisible="False" />
+
+      <Image Source="avares://Projection3D/ViewUI/GUIMainIMG/glow-violet.png"
+             Width="560" Height="560"
+             Stretch="Uniform"
+             HorizontalAlignment="Left"
+             VerticalAlignment="Bottom"
+             Margin="-200,0,0,-240"
+             Opacity="0.6"
+             IsHitTestVisible="False" />
+
+      <Rectangle Opacity="0.3" IsHitTestVisible="False">
+        <Rectangle.Fill>
+          <ImageBrush Source="avares://Projection3D/ViewUI/GUIMainIMG/dot-grid.png"
+                      TileMode="Tile"
+                      DestinationRect="0,0,160,160" />
+        </Rectangle.Fill>
+      </Rectangle>
+    </Grid>
+
+    <!-- ================= 窗口结构：标题栏 + 内容 ================= -->
+    <Grid RowDefinitions="48,*">
+
+      <!-- ============ 应用内自定义标题栏（纯色 + 白字） ============ -->
+      <Grid Grid.Row="0"
+            x:Name="TitleBar"
+            Background="{DynamicResource TitleBarBrush}"
+            PointerPressed="OnTitleBarPointerPressed">
+
+        <TextBlock Text="Minecraft Projection Toolkit Demo"
+                   FontSize="13.5"
+                   FontWeight="SemiBold"
+                   Foreground="White"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Left"
+                   Margin="20,0,0,0" />
+
+        <!-- 最小化 / 关闭（无底色，白色图标） -->
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Margin="0,0,8,0"
+                    Spacing="2">
+
+          <Button x:Name="MinimizeButton"
+                  Classes="titlebar"
+                  Click="OnMinimizeClicked"
+                  ToolTip.Tip="最小化">
+            <Image Source="avares://Projection3D/ViewUI/GUIMainIMG/white-.png"
+                   Width="14" Height="14"
+                   Stretch="Uniform"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Center" />
+          </Button>
+
+          <Button x:Name="CloseButton"
+                  Classes="titlebar close"
+                  Click="OnCloseClicked"
+                  ToolTip.Tip="关闭">
+            <Image Source="avares://Projection3D/ViewUI/GUIMainIMG/whitex.png"
+                   Width="14" Height="14"
+                   Stretch="Uniform"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Center" />
+          </Button>
+        </StackPanel>
+      </Grid>
+
+      <!-- ============ 主内容 ============ -->
+      <Grid Grid.Row="1" ColumnDefinitions="286,*" Margin="16,0,16,16">
+
+        <!-- 左侧：选择面板 -->
+        <Border Grid.Column="0"
+                Background="{DynamicResource CardBg}"
+                CornerRadius="18"
+                BorderBrush="{DynamicResource HairlineBrush}"
+                BorderThickness="1"
+                BoxShadow="0 10 34 0 #1A6B5B6E"
+                Padding="14">
+          <DockPanel>
+
+            <!-- 标题（3D 图标已按要求移除） -->
+            <StackPanel DockPanel.Dock="Top" Margin="6,4,4,14">
+              <TextBlock Text="3DProjection"
+                         FontSize="16"
+                         FontWeight="SemiBold"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+              <TextBlock Text="Minecraft 方块三面投影"
+                         FontSize="11"
+                         Foreground="{DynamicResource TextSecondaryBrush}"
+                         Margin="0,2,0,0" />
+            </StackPanel>
+
+            <!-- 底部：配色 + 计数 -->
+            <StackPanel DockPanel.Dock="Bottom" Spacing="8" Margin="0,12,0,0">
+
+              <TextBlock Text="配色方案"
+                         FontSize="11"
+                         Foreground="{DynamicResource TextSecondaryBrush}"
+                         Margin="2,0,0,0" />
+
+              <ComboBox x:Name="ThemeBox"
+                        HorizontalAlignment="Stretch"
+                        SelectedIndex="0"
+                        SelectionChanged="OnThemeChanged">
+                <ComboBoxItem Content="樱花粉" />
+                <ComboBoxItem Content="薰衣草" />
+                <ComboBoxItem Content="薄荷青" />
+              </ComboBox>
+
+              <TextBlock x:Name="CountText"
+                         FontSize="11"
+                         Foreground="{DynamicResource TextSecondaryBrush}"
+                         Margin="2,2,0,0" />
+            </StackPanel>
+
+            <!-- 搜索框 -->
+            <TextBox x:Name="SearchBox"
+                     DockPanel.Dock="Top"
+                     PlaceholderText="搜索方块名称…"
+                     CornerRadius="11"
+                     Padding="11,8"
+                     Margin="0,0,0,10"
+                     Background="#8CFFFFFF"
+                     BorderThickness="1"
+                     BorderBrush="#33FFFFFF" />
+
+            <!-- 方块列表 -->
+            <ListBox x:Name="BlockList"
+                     SelectionChanged="OnBlockSelectionChanged"
+                     Background="Transparent"
+                     BorderThickness="0"
+                     Padding="0">
+              <ListBox.Styles>
+                <Style Selector="ListBoxItem">
+                  <Setter Property="CornerRadius" Value="9" />
+                  <Setter Property="Padding" Value="11,7" />
+                  <Setter Property="Margin" Value="0,2" />
+                  <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+                </Style>
+                <Style Selector="ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+                  <Setter Property="Background" Value="{DynamicResource AccentSoftBrush}" />
+                </Style>
+              </ListBox.Styles>
+            </ListBox>
+          </DockPanel>
+        </Border>
+
+        <!-- 右侧 -->
+        <Grid Grid.Column="1" RowDefinitions="*,Auto" Margin="16,0,0,0">
+
+          <Border Grid.Row="0"
+                  CornerRadius="18"
+                  Background="{DynamicResource CardBg}"
+                  BorderBrush="{DynamicResource HairlineBrush}"
+                  BorderThickness="1"
+                  BoxShadow="0 12 40 0 #1F6B5B6E"
+                  ClipToBounds="True">
+            <Panel>
+              <Border Background="{DynamicResource ViewportBgBrush}"
+                      Opacity="0.72"
+                      CornerRadius="18" />
+
+              <vui:BlockViewer x:Name="Viewer" />
+
+              <Border HorizontalAlignment="Right"
+                      VerticalAlignment="Top"
+                      Margin="0,12,14,0"
+                      Padding="10,5"
+                      CornerRadius="9"
+                      Background="#99FFFFFF">
+                <TextBlock x:Name="AngleText"
+                           Text="yaw 45° · pitch 30°"
+                           FontSize="11"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+              </Border>
+
+              <!-- 状态提示（放渲染区内，避免与底部按钮抢空间） -->
+              <Border HorizontalAlignment="Left"
+                      VerticalAlignment="Bottom"
+                      Margin="14,0,0,14"
+                      Padding="10,5"
+                      CornerRadius="9"
+                      Background="#99FFFFFF">
+                <TextBlock x:Name="StatusText"
+                           FontSize="11"
+                           MaxWidth="380"
+                           TextTrimming="CharacterEllipsis"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+              </Border>
+            </Panel>
+          </Border>
+
+          <Border Grid.Row="1"
+                  Margin="0,14,0,0"
+                  Padding="14,12"
+                  CornerRadius="16"
+                  Background="{DynamicResource CardBgSoft}"
+                  BorderBrush="{DynamicResource HairlineBrush}"
+                  BorderThickness="1">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <Button x:Name="RotateLeftButton" Content="◀ 左转" Click="OnRotateLeftClicked" Classes="ghost" />
+              <Button x:Name="RotateRightButton" Content="右转 ▶" Click="OnRotateRightClicked" Classes="ghost" />
+              <Button x:Name="RotateUpButton" Content="▲ 上转" Click="OnRotateUpClicked" Classes="ghost" />
+              <Button x:Name="RotateDownButton" Content="▼ 下转" Click="OnRotateDownClicked" Classes="ghost" />
+
+              <Border Width="10" />
+
+              <Button x:Name="ResetButton" Content="重置视角" Click="OnResetClicked" Classes="ghost" />
+              <Button x:Name="SaveButton" Content="保存当前视角" Click="OnSaveClicked" Classes="primary" />
+            </StackPanel>
+          </Border>
+        </Grid>
+      </Grid>
+    </Grid>
+
+    <!-- ============================================================
+         新手教程覆盖层
+         ============================================================ -->
+    <Panel x:Name="TutorialOverlay"
+           IsVisible="False"
+           Background="#59000000">
+
+      <Border x:Name="TutorialCard"
+              Width="430"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center"
+              Background="#F7FFFFFF"
+              CornerRadius="20"
+              BorderBrush="#66FFFFFF"
+              BorderThickness="1"
+              BoxShadow="0 24 70 0 #40000000"
+              Padding="26,22"
+              RenderTransformOrigin="50%,50%">
+
+        <StackPanel Spacing="14">
+
+          <!-- 步骤序号 + 进度点 -->
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBlock x:Name="TutorialStepText"
+                       Text="第 1 步 / 共 4 步"
+                       FontSize="11"
+                       VerticalAlignment="Center"
+                       Foreground="{DynamicResource TextSecondaryBrush}" />
+
+            <StackPanel x:Name="TutorialDots"
+                        Grid.Column="1"
+                        Orientation="Horizontal"
+                        Spacing="6"
+                        VerticalAlignment="Center" />
+          </Grid>
+
+          <!-- 标题 + 说明（切换步骤时整体做淡入淡出位移） -->
+          <StackPanel x:Name="TutorialContent" Spacing="10">
+            <TextBlock x:Name="TutorialTitle"
+                       Text="选择方块"
+                       FontSize="20"
+                       FontWeight="SemiBold"
+                       Foreground="{DynamicResource TextPrimaryBrush}" />
+
+            <TextBlock x:Name="TutorialBody"
+                       Text=""
+                       FontSize="13"
+                       LineHeight="22"
+                       TextWrapping="Wrap"
+                       Foreground="{DynamicResource TextSecondaryBrush}" />
+          </StackPanel>
+
+          <!-- 按钮 -->
+          <StackPanel Orientation="Horizontal"
+                      HorizontalAlignment="Right"
+                      Spacing="8"
+                      Margin="0,6,0,0">
+            <Button Content="跳过教程"
+                    Click="OnTutorialSkipClicked"
+                    Classes="ghost" />
+            <Button x:Name="TutorialNextButton"
+                    Content="下一步"
+                    Click="OnTutorialNextClicked"
+                    Classes="primary"
+                    Padding="18,7" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+    </Panel>
+
+    <!-- ============================================================
+         右下角欢迎弹窗
+         ============================================================ -->
+    <Border x:Name="WelcomeToast"
+            IsVisible="False"
+            Opacity="0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Margin="0,0,22,22"
+            Width="326"
+            Padding="18,16"
+            CornerRadius="18"
+            Background="{DynamicResource CardBg}"
+            BorderBrush="#4DFFFFFF"
+            BorderThickness="1"
+            BoxShadow="0 18 46 0 #2E6B5B6E"
+            RenderTransformOrigin="50%,100%">
+
+      <StackPanel Spacing="11">
+
+        <StackPanel Orientation="Horizontal" Spacing="10">
+          <Border Width="30" Height="30" CornerRadius="10"
+                  Background="{DynamicResource AccentBrush}"
+                  VerticalAlignment="Top">
+            <TextBlock Text="✦"
+                       FontSize="15"
+                       Foreground="White"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center" />
+          </Border>
+          <StackPanel VerticalAlignment="Center" Spacing="2">
+            <TextBlock Text="欢迎使用 3DProjection"
+                       FontSize="14"
+                       FontWeight="SemiBold"
+                       Foreground="{DynamicResource TextPrimaryBrush}" />
+            <TextBlock Text="要开启新手教程吗？"
+                       FontSize="12"
+                       Foreground="{DynamicResource TextSecondaryBrush}" />
+          </StackPanel>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+          <Button x:Name="ToastNoButton"
+                  Content="以后再说"
+                  Click="OnToastNoClicked"
+                  Classes="ghost"
+                  Padding="12,6" />
+          <Button x:Name="ToastYesButton"
+                  Content="开始教程"
+                  Click="OnToastYesClicked"
+                  Classes="primary"
+                  Padding="14,6" />
+        </StackPanel>
+
+        <Border Height="3"
+                CornerRadius="2"
+                Background="#1F000000"
+                ClipToBounds="True">
+          <Border x:Name="ToastProgressFill"
+                  HorizontalAlignment="Left"
+                  CornerRadius="2"
+                  Width="0"
+                  Background="{DynamicResource AccentBrush}" />
+        </Border>
+      </StackPanel>
+    </Border>
+  </Panel>
+  </Border>
+</Window>
