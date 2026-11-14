@@ -1,0 +1,13 @@
+# Normalise line endings on commit, keep them native on checkout
+* text=auto
+
+# Binary assets — never let git touch these
+*.png   binary
+*.ico   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.zip   binary
+
+# Documentation
+*.md    text
